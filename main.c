@@ -3,7 +3,8 @@
 #include <string.h>
 #include "trie.h"
 
-int main() {
+int main() 
+{
     Node* root = NULL;
     int m;
     char filename[50];
@@ -35,7 +36,8 @@ int main() {
 
     int n = strlen(sequence);
 
-    for (int i = 0; i <= n - m; i++) {
+    for (int i = 0; i <= n - m; i++) 
+    {
         char gene[10];
         strncpy(gene, &sequence[i], m);
         gene[m] = '\0';
@@ -44,26 +46,32 @@ int main() {
 
     printf("Sequence loaded successfully.\n");
 
-    while (1) {
+    while (1) 
+    {
         char command[20];
         printf(">bio ");
         scanf("%s", command);
 
-        if (strcmp(command, "search") == 0) {
+        if (strcmp(command, "search") == 0) 
+        {
             char gene[10];
             scanf("%s", gene);
             Node* result = search(root, gene);
-            if (result && result->count > 0) {
+            if (result && result->count > 0) 
+            {
                 for (int i = 0; i < result->count; i++)
                     printf("%d ", result->positions[i]);
                 printf("\n");
-            } else {
+            } else 
+            {
                 printf("-1\n");
             }
-        } else if (strcmp(command, "exit") == 0) {
+        } else if (strcmp(command, "exit") == 0) 
+        {
             printf("Clearing cache and exiting...\n");
             break;
-        } else {
+        } else 
+        {
             printf("Comando no reconocido.\n");
         }
     }

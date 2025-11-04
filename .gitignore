@@ -1,0 +1,31 @@
+# Ejecutables
+bio
+bio.exe
+*.exe
+*.out
+# Archivos objeto
+*.o
+*.obj
+# Archivos de depuración
+*.dSYM/
+*.su
+*.idb
+*.pdb
+# Archivos del compilador
+*.d
+# Archivos temporales
+*~
+*.swp
+*.swo
+.DS_Store
+# Archivos de Visual Studio
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+# Archivos de VSCode
+.vscode/
+# Archivos de prueba generados
+test_*.txt
+output_*.txt

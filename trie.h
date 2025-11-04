@@ -3,7 +3,8 @@
 
 #define ALPHABET_SIZE 4  // A, C, G, T
 
-typedef struct Node {
+typedef struct Node 
+{
     struct Node *children[ALPHABET_SIZE];
     int *positions;
     int count;

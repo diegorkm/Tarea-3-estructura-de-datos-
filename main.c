@@ -2,6 +2,69 @@
 #include <stdlib.h>
 #include <string.h>
 #include "trie.h"
+#include <ctype.h>
+
+#define MAX_SEQUENCE_LENGTH 1000
+#define MAX_GENE_LENGTH 20
+#define MAX_FILENAME_LENGTH 100
+
+/*VALIDación para que un gen solo tenga
+caracteres validos (ACGT)*/
+
+int validate_gene(const char* gene)
+{
+    for (int i = 0; gene[i] != '\0'; i++)
+    {
+    char c = toupper(gene[i]);
+        {
+            if (c != 'A' && c != 'C' && c != 'G' && c != 'T')
+            return 0; /*caracter invalido en algún lado*/
+        }
+    }
+    return 1; /*gen valido*/
+}
+
+/*convierte un gen a mayusculas*/
+void to_uppercase(char* gene)
+{
+    for (int i = 0; gene[i] != '\0'; i++)
+    {
+        gene[i] = toupper(gene[i]);
+    }
+}
+
+/**
+ * procesa la secuencia y carga todos los genes desde el trie
+ * @param root: raiz del trie
+ * @param sequence: secuencia génetica
+ * @param m: tamaño del gen
+ */ 
+void load_genes(Node* root, const char* sequence, int m)
+{
+    int n = strlen(sequence);
+
+    for (int i = 0; i <= n - m; i++)
+    {
+        char gene[MAX_GENE_LENGTH];
+        strncpy(gene, &sequence[i], m);
+        gene[m] = '\0';
+        insert(root, gene, i);
+    }
+}
+
+/**/
+void show_help() 
+{
+    printf("\nComandos disponibles:\n");
+    printf("  start <m>        - Inicializar arbol con genes de tamaño m\n");
+    printf("  read <archivo>   - Cargar secuencia desde archivo\n");
+    printf("  search <gen>     - Buscar un gen especifico\n");
+    printf("  max              - Mostrar gen(es) más frecuente(s)\n");
+    printf("  min              - Mostrar gen(es) menos frecuente(s)\n");
+    printf("  all              - Mostrar todos los genes\n");
+    printf("  help             - Mostrar este menu\n");
+    printf("  exit             - Salir del programa\n\n");
+}
 
 int main() 
 {
@@ -13,7 +76,8 @@ int main()
     scanf("%d", &m);
     root = create_node();
 
-    if (!root) {
+    if (!root) 
+    {
         printf("Error: no se pudo crear el árbol.\n");
         return 1;
     }

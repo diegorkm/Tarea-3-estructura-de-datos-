@@ -1,42 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "trie.h"
-
-#define MAX_SEQUENCE_LENGTH 1000
-#define MAX_GENE_LENGTH 20
-#define MAX_FILENAME_LENGTH 100
-
-/*VALIDación para que un gen solo tenga
-caracteres validos (ACGT)*/
-
-int validate_gene(const char* gene)
-{
-    for (int i = 0; gene[i] != '\0'; i++)
-    {
-    char c = toupper(gene[i]);
-        {
-            if (c != 'A' && c != 'C' && c != 'G' && c != 'T')
-            return 0; /*caracter invalido en algún lado*/
-        }
-    }
-    return 1; /*gen valido*/
-}
-
-/*convierte un gen a mayusculas*/
-void to_uppercase(char* gene)
-{
-    for (int i = 0; gene[i] != '\0'; i++)
-    {
-        gene[i] = toupper(gene[i]);
-    }
-}
-
 
 int char_to_index(char c) 
 {
-    switch (c) {
+    switch (c) 
+    {
         case 'A': return 0;
         case 'C': return 1;
         case 'G': return 2;

@@ -21,7 +21,7 @@ Sistema que permite buscar patrones de genes cortos dentro de secuencias genéti
   - Listar todos los genes presentes
 - **Gestión de memoria**: Liberación adecuada de estructuras
 
-## 🚀 Compilación
+## Compilación
 
 ```bash
 make
@@ -123,7 +123,7 @@ TACTAAGAAGC
 - Cada nodo interno puede tener hasta 4 hijos (uno por cada base)
 - Las hojas contienen listas con las posiciones donde aparece el gen
 
-## 🔧 Limpieza
+## Limpieza
 
 Para eliminar los archivos compilados:
 ```bash

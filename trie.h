@@ -11,8 +11,8 @@ typedef struct Node
 } Node;
 
 int char_to_index(char c);
-Node* create_node();
 void insert(Node* root, const char* gene, int position);
+Node* create_node();
 Node* search(Node* root, const char* gene);
 void free_tree(Node* node);
 

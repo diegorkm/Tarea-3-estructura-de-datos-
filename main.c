@@ -52,6 +52,49 @@ void load_genes(Node* root, const char* sequence, int m)
     }
 }
 
+int read_sequence(const char* filename, char* sequence, int max_length)
+{
+    FILE* f = fopen(filename, "r");
+    if (!f)
+    {
+        printf("Error: no se pudo abrir el archivo '%s' :(\n", filename);
+        return 0;
+    }
+
+    if (!fgets(sequence, max_length, f))
+    {
+        printf("error: el archivo esta vacio o no se pudo leer\n");
+        fclose(f);
+        return 0;
+    }
+
+    fclose(f);
+
+    /*eliminar ese salto de linea raro del final*/
+    int len = strlen(sequence);
+    if (len > 0 && sequence[len - 1] == '\n')
+    {
+        sequence[len - 1] = '\0';
+        len--;
+    }
+
+    if (len > 0 && sequence[len - 1] == '\r')
+    {
+        sequence[len - 1] = '\0';
+        len--;
+    }
+
+    /*convertri caracteres a mayusculas y validar*/
+    to_uppercase(sequence);
+    if (!validate_gene(sequence))
+    {
+        printf("Error: la secuencia contiene caracteres invalidos.\n");
+        return 0;
+    }
+
+    return 1; /*lectura exitosa!!!*/
+}
+
 /**/
 void show_help() 
 {
@@ -69,7 +112,8 @@ void show_help()
 int main() 
 {
     Node* root = NULL;
-    int m;
+    int m = 0;
+    char command[20];
     char filename[50];
 
     printf(">bio start [m]: ");

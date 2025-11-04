@@ -102,7 +102,7 @@ void show_help()
     printf("  start <m>        - Inicializar arbol con genes de tamaño m\n");
     printf("  read <archivo>   - Cargar secuencia desde archivo\n");
     printf("  search <gen>     - Buscar un gen especifico\n");
-    printf("  max              - Mostrar gen(es) más frecuente(s)\n");
+    printf("  max              - Mostrar gen(es) mas frecuente(s)\n");
     printf("  min              - Mostrar gen(es) menos frecuente(s)\n");
     printf("  all              - Mostrar todos los genes\n");
     printf("  help             - Mostrar este menu\n");
@@ -113,77 +113,186 @@ int main()
 {
     Node* root = NULL;
     int m = 0;
+    int initialized = 0;
+    int sequence_loaded = 0;
     char command[20];
-    char filename[50];
 
-    printf(">bio start [m]: ");
-    scanf("%d", &m);
-    root = create_node();
+    printf("Sistema de busqueda de genes en secuencias geneticas\n");
+    show_help();
 
-    if (!root) 
+    while (1)
     {
-        printf("Error: no se pudo crear el árbol.\n");
-        return 1;
-    }
-
-    printf("Tree created with height %d\n", m);
-
-    printf(">bio read [archivo]: ");
-    scanf("%s", filename);
-
-    FILE* f = fopen(filename, "r");
-    if (!f) {
-        printf("Error al abrir el archivo.\n");
-        free_tree(root);
-        return 1;
-    }
-
-    char sequence[10000];
-    fscanf(f, "%s", sequence);
-    fclose(f);
-
-    int n = strlen(sequence);
-
-    for (int i = 0; i <= n - m; i++) 
+    printf(">bio: ");
+    if (scanf("%s", command) != 1)
     {
-        char gene[10];
-        strncpy(gene, &sequence[i], m);
-        gene[m] = '\0';
-        insert(root, gene, i);
+        break;
     }
-
-    printf("Sequence loaded successfully.\n");
-
-    while (1) 
-    {
-        char command[20];
-        printf(">bio ");
-        scanf("%s", command);
-
-        if (strcmp(command, "search") == 0) 
+        // Comando: start
+        if (strcmp(command, "start") == 0) 
         {
-            char gene[10];
-            scanf("%s", gene);
+            if (initialized) 
+            {
+                printf("Error: el arbol ya esta inicializado. Use 'exit' primero.\n");
+                continue;
+            }
+
+            if (scanf("%d", &m) != 1 || m <= 0 || m > MAX_GENE_LENGTH) 
+            {
+                printf("Error: tamaño de gen invalido (debe ser 1-%d)\n", MAX_GENE_LENGTH);
+                while (getchar() != '\n'); // Limpiar buffer
+                continue;
+            }
+
+            root = create_node();
+            if (!root) 
+            {
+                printf("Error: no se pudo crear el arbol\n");
+                return 1;
+            }
+
+            initialized = 1;
+            printf("Tree created with height %d\n", m);
+        }
+        
+        /* comndo: read*/
+        else if (strcmp(command, "read") == 0) 
+        {
+            if (!initialized) 
+            {
+                printf("Error: primero debe inicializar el arbol con 'start'\n");
+                continue;
+            }
+
+            char filename[MAX_FILENAME_LENGTH];
+            if (scanf("%s", filename) != 1) 
+            {
+                printf("Error: nombre de archivo invalido\n");
+                continue;
+            }
+
+            char sequence[MAX_SEQUENCE_LENGTH];
+            if (!read_sequence(filename, sequence, MAX_SEQUENCE_LENGTH)) 
+            {
+                continue;
+            }
+
+            int n = strlen(sequence);
+            if (n < m) 
+            {
+                printf("Error: la secuencia es mas corta que el tamaño del gen\n");
+                continue;
+            }
+
+            load_genes(root, sequence, m);
+            sequence_loaded = 1;
+            printf("Sequence S read from file\n");
+        }
+        
+        // Comando: search
+        else if (strcmp(command, "search") == 0) 
+        {
+            if (!initialized || !sequence_loaded) 
+            {
+                printf("Error: primero debe inicializar y cargar una secuencia\n");
+                continue;
+            }
+
+            char gene[MAX_GENE_LENGTH];
+            if (scanf("%s", gene) != 1) 
+            {
+                printf("Error: gen invalido\n");
+                continue;
+            }
+
+            to_uppercase(gene);
+
+            // validar longitud del genn*/
+            if (strlen(gene) != m) 
+            {
+                printf("Error: el gen debe tener tamaño %d\n", m);
+                continue;
+            }
+
+            /*validación de caracteres*/
+            if (!validate_gene(gene)) 
+            {
+                printf("Error: la secuencia contiene caracteres invalidos (solo A, C, G, T)\n");
+                continue;
+            }
+
             Node* result = search(root, gene);
             if (result && result->count > 0) 
             {
-                for (int i = 0; i < result->count; i++)
+                for (int i = 0; i < result->count; i++) 
+                {
                     printf("%d ", result->positions[i]);
+                }
                 printf("\n");
             } else 
             {
                 printf("-1\n");
             }
-        } else if (strcmp(command, "exit") == 0) 
+        }
+        
+        // Comando: max (TODO: implementar)
+        else if (strcmp(command, "max") == 0) 
         {
-            printf("Clearing cache and exiting...\n");
+            if (!initialized || !sequence_loaded) 
+            {
+                printf("Error: primero debe inicializar y cargar una secuencia\n");
+                continue;
+            }
+            printf("Comando 'max' en desarrollo\n");
+        }
+        
+        /* Comando: min (TODO: implementar)*/
+        else if (strcmp(command, "min") == 0) 
+        {
+            if (!initialized || !sequence_loaded) 
+            {
+                printf("error: primero debe inicializar y cargar una secuencia\n");
+                continue;
+            }
+            printf("comando 'min' no implementado :(\n");
+        }
+        
+        // Comando: all (TODO: implementar)
+        else if (strcmp(command, "all") == 0) 
+        {
+            if (!initialized || !sequence_loaded) 
+            {
+                printf("Error: primero debe inicializar y cargar una secuencia\n");
+                continue;
+            }
+            printf("Comando 'all' no implementado :(\n");
+        }
+        
+        // Comando: help
+        else if (strcmp(command, "help") == 0) 
+        {
+            show_help();
+        }
+        
+        // Comando: exit
+        else if (strcmp(command, "exit") == 0) 
+        {
+            if (initialized) 
+            {
+                printf("Clearing cache and exiting...\n");
+                free_tree(root);
+            } else 
+            {
+                printf("Exiting...\n");
+            }
             break;
-        } else 
+        }
+        
+        // Comando no reconocido
+        else 
         {
-            printf("Comando no reconocido.\n");
+            printf("Comando no reconocido. Use 'help' para ver comandos disponibles.\n");
         }
     }
 
-    free_tree(root);
     return 0;
 }

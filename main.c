@@ -152,7 +152,7 @@ void show_min(Node* root, int m)
     int depth;   /* profundidad actual (0 = raíz) */
     int i;       /* índice de hijo a explorar en el nivel 'depth' */
 
-    /* min_count guarda el mínimo count > 0 observado; -1 significa "aún no definido" */
+    /* min_count guarda el mínimo count > 0 observado; -1 significa "aún no definido"  */
     int min_count = -1;
 
     /* 

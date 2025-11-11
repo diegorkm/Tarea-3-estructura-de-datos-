@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "trie.h"
 
 int char_to_index(char c) 
@@ -31,16 +32,30 @@ Node* create_node()
 void insert(Node* root, const char* gene, int position) 
 {
     Node* current = root;
+    /*baja por el arbol, sigue el gen*/
     for (int i = 0; gene[i] != '\0'; i++) 
     {
         int index = char_to_index(gene[i]);
         if (index == -1) return;
         if (current->children[index] == NULL)
             current->children[index] = create_node();
+
         current = current->children[index];
     }
+
+/*al llegar a la hoja, agregar a la posición*/
     current->count++;
-    current->positions = realloc(current->positions, current->count * sizeof(int));
+
+/*validación realloc, evitamos mem leaks*/
+    int* temp = realloc(current->positions, current->count * sizeof(int));
+    if (!temp)
+    {
+        /*SI REALLOC LLEGASE A FALLAAR, no perdemos el arreglo original*/
+        fprintf(stderr, "Error: no se pudo asignar la memoria a las posiciones :(\n");
+        current->count--; /*revierte el incremento*/
+        return;
+    }
+    current->positions = temp;
     current->positions[current->count - 1] = position;
 }
 

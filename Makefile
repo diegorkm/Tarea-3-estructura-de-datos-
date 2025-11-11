@@ -1,10 +1,22 @@
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -Wextra -g -std=c99
+TARGET = bio
 
-all: main
+SOURCES = main.c trie.c
+HEADERS = trie.h
+OBJS = $(SOURCES:.c=.o)
 
-main: main.c trie.c trie.h
-	$(CC) $(CFLAGS) main.c trie.c -o bio
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
+	@echo "Compilacion exitosa: ./$(TARGET)"
+
+%.o: %.c $(HEADERS)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f bio
+	rm -f $(TARGET) $(OBJS)
+
+run: $(TARGET)
+	./$(TARGET)

@@ -4,6 +4,11 @@
 
 #include "trie.h"
 
+/**
+* convierte los caracteres a sus indices,
+* @param c: caracter (A,C,G,T)
+* @return indice (0,1,2,3) o -1 si es invalido
+*/
 int char_to_index(char c) 
 {
     switch (c) 
@@ -16,6 +21,10 @@ int char_to_index(char c)
     }
 }
 
+/**
+ * crea un nuevo nodo en el trie
+ * @return puntero al nodo nuevo, null si falla
+ */
 Node* create_node() 
 {
     Node* node = (Node*)malloc(sizeof(Node));

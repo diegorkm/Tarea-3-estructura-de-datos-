@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "trie.h"
 #include <ctype.h>
+
+#include "trie.h"
 
 #define MAX_SEQUENCE_LENGTH 1000
 #define MAX_GENE_LENGTH 20
@@ -15,11 +16,9 @@ int validate_gene(const char* gene)
 {
     for (int i = 0; gene[i] != '\0'; i++)
     {
-    char c = toupper(gene[i]);
-        {
-            if (c != 'A' && c != 'C' && c != 'G' && c != 'T')
-            return 0; /*caracter invalido en algún lado*/
-        }
+        char c = toupper(gene[i]);
+        if (c != 'A' && c != 'C' && c != 'G' && c != 'T')
+        return 0; /*caracter invalido en algún lado*/
     }
     return 1; /*gen valido*/
 }
@@ -298,7 +297,7 @@ int main()
 
     while (1)
     {
-    printf(">bio: ");
+    printf(">bio ");
     if (scanf("%s", command) != 1)
     {
         break;
@@ -383,7 +382,7 @@ int main()
             to_uppercase(gene);
 
             // validar longitud del gen
-            if (strlen(gene) != m) 
+            if ((int)strlen(gene) != m) 
             {
                 printf("Error: el gen debe tener tamaño %d\n", m);
                 continue;

@@ -25,7 +25,7 @@ $(TARGET): $(OBJECTS)
 
 # Limpieza
 clean:
-	rm -f $(TARGET) $(OBJECTS) .log vgcore. 
+	rm -f $(TARGET) $(OBJECTS) 
 	@echo "Limpieza completada"
 
 # Ejecutar el programa

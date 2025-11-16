@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
 #include "trie.h"
 
 #define MAX_SEQUENCE_LENGTH 2000000
@@ -32,7 +33,7 @@ int read_sequence(const char* filename, char* sequence, int max_len) {
         return 0;
     }
     if (!fgets(sequence, max_len, f)) {
-        printf("Error: archivo vacío o no legible\n");
+        printf("Error: archivo vacio o no legible\n");
         fclose(f);
         return 0;
     }
@@ -47,7 +48,7 @@ int read_sequence(const char* filename, char* sequence, int max_len) {
 
     to_uppercase(sequence);
     if (!validate_gene(sequence)) {
-        printf("Error: la secuencia contiene caracteres inválidos\n");
+        printf("Error: la secuencia contiene caracteres invalidos\n");
         return 0;
     }
     return 1;
@@ -65,20 +66,22 @@ void load_genes(Node* root, const char* sequence, int m) {
     }
 }
 
-void show_help() {
+void show_help() 
+{
     printf("\nComandos disponibles:\n");
-    printf(" start <m> - Inicializar árbol (m = tamaño del gen)\n");
-    printf(" read <archivo> - Cargar secuencia ADN\n");
-    printf(" search <gen> - Buscar un gen específico\n");
-    printf(" max - Gen(es) más repetido(s)\n");
-    printf(" min - Gen(es) menos repetido(s)\n");
-    printf(" all - Todos los genes presentes\n");
-    printf(" help - Mostrar este menú\n");
-    printf(" exit - Salir y liberar memoria\n\n");
+    printf("  start <m>        - Inicializar arbol con genes de dimension m\n");
+    printf("  read <archivo>   - Cargar secuencia desde archivo\n");
+    printf("  search <gen>     - Buscar un gen especifico\n");
+    printf("  max              - Mostrar gen(es) mas frecuente(s)\n");
+    printf("  min              - Mostrar gen(es) menos frecuente(s)\n");
+    printf("  all              - Mostrar todos los genes\n");
+    printf("  help             - Mostrar este menu\n");
+    printf("  exit             - Salir del programa\n\n");
 }
 
 /* === RECORRIDO ITERATIVO DFS === */
-static void dfs_traversal(Node* root, int m, int target_count, int show_all_flag, int* found) {
+static void dfs_traversal(Node* root, int m, int target_count, int show_all_flag, int* found)
+{
     if (!root) return;
     const char* ALPH = "ACGT";
     char buf[MAX_GENE_LENGTH + 1];
@@ -98,7 +101,8 @@ static void dfs_traversal(Node* root, int m, int target_count, int show_all_flag
             else if (target_count >= 0)
                 do_print = (leaf && leaf->count == target_count);
 
-            if (do_print && leaf->count > 0) {
+            if (do_print && leaf->count > 0) 
+            {
                 buf[m] = '\0';
                 printf("%s", buf);
                 for (int k = 0; k < leaf->count; k++)
@@ -200,7 +204,7 @@ int main() {
     int sequence_loaded = 0;
     char command[20];
 
-    printf("Sistema de búsqueda de genes en secuencias genéticas\n");
+    printf("Sistema de busqueda de genes en secuencias geneticas\n");
     show_help();
 
     while (1) {
@@ -209,17 +213,17 @@ int main() {
 
         if (strcmp(command, "start") == 0) {
             if (initialized) {
-                printf("Error: el árbol ya está inicializado. Use 'exit' primero.\n");
+                printf("Error: el arbol ya esta inicializado. Use 'exit' primero.\n");
                 while(getchar() != '\n');
                 continue;
             }
             if (scanf("%d", &m) != 1 || m <= 0 || m > MAX_GENE_LENGTH) {
-                printf("Error: tamaño de gen inválido (1-%d)\n", MAX_GENE_LENGTH);
+                printf("Error: tamaño de gen invalido (1-%d)\n", MAX_GENE_LENGTH);
                 while(getchar() != '\n');
                 continue;
             }
             root = create_node();
-            if (!root) { printf("Error: no se pudo crear el árbol\n"); return 1; }
+            if (!root) { printf("Error: no se pudo crear el arbol\n"); return 1; }
             initialized = 1;
             printf("Tree created with height %d\n", m);
         }
@@ -236,7 +240,7 @@ int main() {
                 free(sequence); continue;
             }
             if ((int)strlen(sequence) < m) {
-                printf("Error: la secuencia es más corta que el tamaño del gen\n");
+                printf("Error: la secuencia es mas corta que el tamaño del gen\n");
                 free(sequence); continue;
             }
 
@@ -254,10 +258,10 @@ int main() {
             if (scanf("%s", gene) != 1) continue;
             to_uppercase(gene);
             if ((int)strlen(gene) != m) {
-                printf("Error: el gen debe tener tamaño %d\n", m); continue;
+                printf("Error: el gen debe tener espacio: %d\n", m); continue;
             }
             if (!validate_gene(gene)) {
-                printf("Error: caracteres inválidos en gen\n"); continue;
+                printf("Error: caracteres invalidos en gen\n"); continue;
             }
             Node* res = search(root, gene);
             if (res && res->count > 0) {

@@ -10,6 +10,7 @@ typedef struct Node {
     int capacity;  // Para crecimiento eficiente del array
 } Node;
 
+int char_to_index (char c);
 Node* create_node();
 void insert(Node* root, const char* gene, int position);
 Node* search(Node* root, const char* gene);

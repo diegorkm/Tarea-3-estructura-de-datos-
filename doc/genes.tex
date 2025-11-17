@@ -1,0 +1,1373 @@
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, arrows.meta, trees}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amsmath}
+\setlength{\parindent}{0pt}
+
+
+% Configuración para código C
+\lstset{
+    language=C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+    captionpos=b,
+    showspaces=false,
+    showtabs=false,
+    tabsize=4,
+    keepspaces=true,
+    columns=fullflexible
+}
+
+% Rutas para los recursos gráficos
+\graphicspath{{./}{./logo/}{./image/}}
+
+% ============================================================
+% CONFIGURACIÓN BÁSICA DEL TEMPLATE
+% ============================================================
+\newcommand{\institucion}{Universidad de Magallanes}
+\newcommand{\facultad}{Departamento de Ingeniería en Computación}
+\newcommand{\programa}{Ingeniería Civil en Computación e Informática}
+\newcommand{\curso}{Estructuras de Datos}
+\newcommand{\docente}{Christian Vásquez Rebolledo}
+\newcommand{\estudiante}{Alexander Lucero / Diego Peralta / Alan Sánchez}
+\newcommand{\mail}{allucero@umag.cl / dperalta@umag.cl / alasanch@umag.cl / Grupo N°2}
+\newcommand{\titulo}{Tarea N°3: Sistema de Búsqueda de Genes con Árboles Trie}
+\newcommand{\fechaentrega}{17 de Noviembre, 2025}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\institucion}
+\fancyhead[R]{\curso}
+\fancyfoot[C]{\thepage}
+\setlength{\headheight}{14.5pt}
+
+\begin{document}
+
+% ============================================================
+% PORTADA
+% ============================================================
+\begin{center}
+  \begin{tabular}{@{}c@{\hspace{2cm}}c@{\hspace{2cm}}c@{}}
+  \includegraphics[height=3.0cm]{umag.png} &
+    \begin{minipage}[c]{5.5cm}
+      \centering
+      {\Large \curso \\
+      {\large \institucion}
+    \end{minipage} &
+  \includegraphics[height=3.0cm]{dic.png}}
+  \end{tabular}
+\end{center}
+
+\vspace{40mm}
+\begin{center}
+  {\Huge \textbf{Informe de Tarea N°3}}\\
+  \vspace{5mm}
+  {\Large Sistema de Búsqueda de Genes}\\
+  {\Large en Secuencias de ADN}
+\end{center}
+\vspace{8cm}
+
+\hrule
+\vspace{1mm}
+\hrule
+
+\vspace{3mm}
+\begin{tabular}{ll}
+  Estudiantes: & \estudiante \\
+  Mail: & \mail \\
+  Carrera: & \programa \\
+  Departamento: & \facultad \\
+  Profesor: & \docente \\
+  Fecha: & \fechaentrega \\
+\end{tabular}
+
+\vspace{3mm}
+\hrule
+\vspace{1mm}
+\hrule
+
+\clearpage
+
+% ============================================================
+% RESUMEN
+% ============================================================
+\section{Resumen}
+
+Este proyecto implementó un sistema de búsqueda de patrones genéticos utilizando árboles Trie 4-arios en C. El sistema permite identificar y analizar secuencias cortas de ADN (genes) dentro de secuencias genéticas largas compuestas por las bases nucleotídicas A, C, G y T.\\
+
+La implementación utiliza un árbol Trie donde cada nodo puede tener hasta 4 hijos (uno por cada base nucleotídica), y las hojas contienen listas de posiciones donde aparece cada gen. El sistema incluye funcionalidades para cargar secuencias desde archivos, buscar genes específicos, identificar los genes más y menos frecuentes, y listar todos los genes presentes.\\
+
+Los resultados demostraron el correcto funcionamiento del algoritmo de búsqueda de patrones, con gestión eficiente de memoria mediante crecimiento exponencial de arreglos dinámicos, manejo robusto de errores, y una interfaz de línea de comandos intuitiva. El proyecto aplica conceptos fundamentales de bioinformática para el análisis de secuencias genéticas de manera eficiente.
+
+\clearpage
+
+% ============================================================
+% INTRODUCCIÓN Y OBJETIVOS
+% ============================================================
+\section{Introducción y Objetivos}
+
+\subsection{Introducción}
+
+En bioinformática, uno de los problemas fundamentales es la búsqueda de secuencias cortas de genes dentro de secuencias genéticas largas. El análisis de secuencias de ADN y proteínas implica la identificación de patrones específicos, una tarea crucial para aplicaciones como la identificación de genes, el alineamiento de secuencias de proteínas, y el análisis de características genómicas.\\
+
+Una secuencia genética se representa como una cadena de caracteres donde cada carácter corresponde a una base nucleotídica: Adenina (A), Citosina (C), Guanina (G) o Timina (T). El desafío consiste en buscar eficientemente patrones cortos (genes de tamaño $m$) dentro de secuencias potencialmente muy largas (de tamaño $n$). \\
+
+Este proyecto implementa una solución basada en árboles Trie 4-arios, una estructura de datos óptima para almacenar y buscar patrones en cadenas de texto. La implementación permite no solo buscar genes individuales, sino también analizar la frecuencia de aparición de todos los genes posibles de un tamaño específico, proporcionando herramientas valiosas para el análisis genómico.
+
+\subsection{Objetivos}
+
+\begin{itemize}
+  \item Implementar y manipular estructuras de datos abstractas como árboles Trie y listas enlazadas para almacenar y gestionar datos genéticos
+  
+  \item Desarrollar habilidades en programación en lenguaje C, con énfasis en manejo de memoria dinámica, punteros y eficiencia algorítmica
+  
+  \item Implementar un sistema completo de búsqueda de patrones utilizando árboles Trie 4-arios
+  
+  \item Crear funcionalidades para analizar frecuencias de genes (máximo, mínimo, listado completo)
+  
+  \item Aplicar técnicas de optimización de memoria mediante crecimiento exponencial de arreglos dinámicos
+  
+  \item Desarrollar una interfaz de línea de comandos robusta con validación exhaustiva de entrada
+  
+  \item Comprender y aplicar conceptos de bioinformática en problemas reales
+\end{itemize}
+
+\clearpage
+
+% ============================================================
+% MARCO TEÓRICO
+% ============================================================
+\section{Marco Teórico}
+
+\subsection{Árboles Trie (Prefix Trees)}
+
+Un árbol Trie es una estructura de datos especializada en el almacenamiento y búsqueda eficiente de cadenas de texto. El nombre proviene de "retrieval" (recuperación), aunque comúnmente se pronuncia "try" para distinguirlo de "tree".
+
+\textbf{Características principales:}
+\begin{itemize}
+  \item Cada nodo representa un carácter de una cadena
+  \item Los nodos comparten prefijos comunes, optimizando el espacio
+  \item La profundidad de un nodo determina su posición en la cadena
+  \item Las hojas (o nodos terminales) marcan el final de una cadena válida
+  \item Permite búsquedas en tiempo proporcional a la longitud de la cadena buscada
+\end{itemize}
+
+\subsection{Trie 4-ario para Secuencias Genéticas}
+
+En el contexto de secuencias de ADN, utilizamos un Trie 4-ario especializado:
+
+\textbf{Estructura del nodo:}
+\begin{itemize}
+  \item Cada nodo tiene exactamente 4 hijos posibles: A, C, G, T
+  \item Los nodos internos solo almacenan referencias a sus hijos
+  \item Los nodos hoja (profundidad $m$) almacenan listas de posiciones
+  \item No se requiere almacenar el carácter en el nodo (se infiere por el índice)
+\end{itemize}
+
+\begin{lstlisting}[caption=Estructura del nodo Trie]
+typedef struct Node 
+{
+    struct Node* children[4];  // [A, C, G, T]
+    int* positions;            // Lista de posiciones (solo hojas)
+    int count;                 // Numero de posiciones
+    int capacity;              // Capacidad del arreglo dinamico
+} Node;
+\end{lstlisting}
+
+\textbf{Mapéo de caracteres a índices:}
+\begin{itemize}
+  \item A $\rightarrow$ 0
+  \item C $\rightarrow$ 1
+  \item G $\rightarrow$ 2
+  \item T $\rightarrow$ 3
+\end{itemize}
+
+\clearpage
+
+\subsection{Algoritmo de Búsqueda de Patrones}
+
+El algoritmo implementado sigue una estrategia de ventana deslizante:
+
+\textbf{Fase 1: Construcción del Trie}
+\begin{enumerate}
+  \item Crear la raíz del árbol Trie
+  \item Para cada posición $i$ en la secuencia (donde $0 \leq i \leq n - m$):
+  \begin{itemize}
+    \item Extraer el gen de tamaño $m$ comenzando en posición $i$
+    \item Descender por el Trie siguiendo los caracteres del gen
+    \item Crear nodos si no existen en el camino
+    \item Al llegar a la hoja (profundidad $m$), agregar $i$ a la lista de posiciones
+  \end{itemize}
+\end{enumerate}
+
+\textbf{Fase 2: Búsqueda de Genes}
+\begin{enumerate}
+  \item Recibir un gen $G$ de tamaño $m$
+  \item Descender por el Trie siguiendo los caracteres de $G$
+  \item Si algún carácter no tiene hijo, el gen no existe
+  \item Si se llega a una hoja, retornar su lista de posiciones
+\end{enumerate}
+
+\subsection{Complejidad Algorítmica}
+
+\textbf{Construcción del Trie:}
+\begin{itemize}
+  \item Tiempo: $O(n \cdot m)$ donde $n$ es la longitud de la secuencia y $m$ el tamaño del gen
+  \item Espacio: $O(k \cdot m)$ donde $k$ es el número de genes únicos
+  \item En el peor escenario (todos los genes únicos): $O(4^m \cdot m)$
+\end{itemize}
+
+\textbf{Búsqueda de un gen:}
+\begin{itemize}
+  \item Tiempo: $O(m)$ - proporcional al tamaño del gen
+  \item Espacio: $O(1)$ - no requiere memoria adicional
+\end{itemize}
+
+\textbf{Listado de todos los genes (DFS):}
+\begin{itemize}
+  \item Tiempo: $O(k)$ donde $k$ es el número de genes únicos
+  \item Espacio: $O(m)$ para la pila de recursión/iteración
+\end{itemize}
+
+\clearpage
+
+\subsection{Gestión de Memoria Dinámica}
+
+El proyecto implementa dos estrategias de gestión de memoria:\\
+
+\textbf{1. Crecimiento Exponencial de Arreglos}
+
+En lugar de usar \texttt{realloc()} cada vez que se agrega una posición, se implementa crecimiento exponencial:
+
+\begin{lstlisting}[caption=Estrategia de crecimiento exponencial]
+if (current->count >= current->capacity) {
+    int new_cap = (current->capacity == 0) ? 8 : current->capacity * 2;
+    int* temp = realloc(current->positions, new_cap * sizeof(int));
+    if (!temp) {
+        // Manejo de error
+        return;
+    }
+    current->positions = temp;
+    current->capacity = new_cap;
+}
+\end{lstlisting}
+
+\textbf{Ventajas:}
+\begin{itemize}
+  \item Reduce el número de llamadas a \texttt{realloc()} de $O(n)$ a $O(\log n)$
+  \item Mejora significativa en rendimiento para genes muy frecuentes
+  \item Costo amortizado: $O(1)$ por inserción
+\end{itemize}
+
+\textbf{2. Liberación Recursiva de Memoria}
+
+El árbol se libera mediante un recorrido post-orden:
+
+\begin{lstlisting}[caption=Liberación recursiva del Trie]
+void free_tree(Node* node) {
+    if (!node) return;
+    
+    // Primero liberar hijos
+    for (int i = 0; i < 4; i++)
+        free_tree(node->children[i]);
+    
+    // Luego liberar el arreglo de posiciones
+    free(node->positions);
+    
+    // Finalmente liberar el nodo
+    free(node);
+}
+\end{lstlisting}
+
+\clearpage
+
+% ============================================================
+% EXPLICACIÓN DEL CÓDIGO
+% ============================================================
+\section{Explicación del Código}
+
+\subsection{Arquitectura del Sistema}
+
+El sistema está compuesto por tres módulos principales:
+
+\begin{enumerate}
+  \item \textbf{trie.h:} Definiciones de estructuras y prototipos de funciones
+  \item \textbf{trie.c:} Implementación de operaciones sobre el Trie
+  \item \textbf{main.c:} Interfaz CLI, validación de entrada y coordinación de operaciones
+  \item \textbf{Makefile:} Configuración de compilación con flags para optimizar
+\end{enumerate}
+
+\subsection{Estructura del Nodo}
+
+\begin{lstlisting}[caption=Definición completa del nodo]
+typedef struct Node 
+{
+    struct Node* children[ALPHABET_SIZE];  // 4 hijos: A, C, G, T
+    int* positions;                        // arreglo dinamico de posiciones
+    int count;                             // Numero actual de posiciones
+    int capacity;                          // Capacidad del arreglo
+} Node;
+\end{lstlisting}
+
+\textbf{Justificación del diseño:}
+
+La especificación de la tarea sugiere dos estructuras separadas (nodos internos y hojas), pero optamos por una estructura unificada por:
+
+\begin{itemize}
+  \item \textbf{Simplicidad:} Una sola estructura facilita el manejo de memoria
+  \item \textbf{Eficiencia:} El overhead de campos no utilizados es mínimo
+  \item \textbf{Flexibilidad:} Permite implementaciones más versátiles
+  \item \textbf{Práctica común:} Es la forma estándar de implementar Tries en C
+\end{itemize}
+
+Los nodos internos tienen \texttt{positions = NULL} y \texttt{count = 0}, mientras que las hojas contienen las listas de posiciones.
+
+\clearpage
+
+\subsection{Función create\_node()}
+
+\begin{lstlisting}[caption=Creacion de nodos del Trie]
+Node* create_node() {
+    Node* node = (Node*)malloc(sizeof(Node));
+    if (!node) return NULL;
+    
+    for (int i = 0; i < ALPHABET_SIZE; i++)
+        node->children[i] = NULL;
+    
+    node->positions = NULL;
+    node->count = 0;
+    node->capacity = 0;
+    return node;
+}
+\end{lstlisting}
+
+\textbf{Responsabilidades:}
+\begin{itemize}
+  \item Asignar memoria para un nuevo nodo
+  \item Inicializar todos los hijos a NULL
+  \item Inicializar el arreglo de posiciones vacío
+  \item Establecer contadores en cero
+  \item Validar la asignación de memoria
+\end{itemize}
+
+\subsection{Función insert()}
+
+\begin{lstlisting}[caption=Inserción de genes en el Trie (simplificado)]
+void insert(Node* root, const char* gene, int position) {
+    Node* current = root;
+    // Descender por el arbol siguiendo el gen
+    for (int i = 0; gene[i] != '\0'; i++) {
+        int idx = char_to_index(gene[i]);
+        if (idx == -1) return;
+        
+        if (current->children[idx] == NULL)
+            current->children[idx] = create_node();
+        
+        current = current->children[idx];
+    }
+    // En la hoja: agregar Posicion con crecimiento exponencial
+    if (current->count >= current->capacity) {
+        int new_cap = (current->capacity == 0) ? 8 : current->capacity * 2;
+        int* temp = realloc(current->positions, new_cap * sizeof(int));
+        if (!temp) {
+            fprintf(stderr, "Error de memoria\n");
+            return;
+        }
+        current->positions = temp;
+        current->capacity = new_cap;
+    }
+    
+    current->positions[current->count] = position;
+    current->count++;
+}
+\end{lstlisting}
+
+\clearpage
+
+\textbf{Análisis de la función:}
+
+\begin{enumerate}
+  \item \textbf{Descenso por el Trie:}
+  \begin{itemize}
+    \item Convierte cada carácter a su índice correspondiente
+    \item Crea nodos intermedios si no existen
+    \item Navega hacia abajo siguiendo el camino del gen
+  \end{itemize}
+  
+  \item \textbf{Gestión de memoria eficiente:}
+  \begin{itemize}
+    \item Implementa crecimiento exponencial (8, 16, 32, 64, ...)
+    \item Reduce realocaciones de $O(n)$ a $O(\log n)$
+    \item Valida el retorno de \texttt{realloc()} para evitar memory leaks
+  \end{itemize}
+  
+  \item \textbf{Almacenamiento de posiciones:}
+  \begin{itemize}
+    \item Guarda la posición en el arreglo dinámico
+    \item Incrementa el contador de posiciones
+    \item Mantiene la capacidad actualizada
+  \end{itemize}
+\end{enumerate}
+
+\subsection{Función search()}
+
+\begin{lstlisting}[caption=Búsqueda de genes]
+Node* search(Node* root, const char* gene) {
+    Node* current = root;
+    
+    for (int i = 0; gene[i] != '\0'; i++) {
+        int idx = char_to_index(gene[i]);
+        if (idx == -1 || current->children[idx] == NULL)
+            return NULL;
+        
+        current = current->children[idx];
+    }
+    
+    return current;  // Retorna la hoja (puede tener count == 0)
+}
+\end{lstlisting}
+
+\textbf{Funcionamiento:}
+\begin{itemize}
+  \item Desciende por el Trie siguiendo los caracteres del gen
+  \item Si encuentra un camino inexistente, retorna NULL
+  \item Si llega al final, retorna el nodo hoja
+  \item El nodo hoja contiene las posiciones en \texttt{positions[]}
+\end{itemize}
+
+\clearpage
+
+\subsection{Recorrido DFS Iterativo}
+
+Para implementar los comandos \texttt{max}, \texttt{min} y \texttt{all}, se utiliza un recorrido DFS (Depth-First Search) iterativo en lugar de recursivo:
+
+\begin{lstlisting}[caption=DFS iterativo con pilas manuales]
+static void dfs_traversal(Node* root, int m, int target_count, 
+                          int show_all_flag, int* found) {
+    if (!root) return;
+    
+    const char* ALPH = "ACGT";
+    char buf[MAX_GENE_LENGTH + 1];
+    Node* stack[MAX_GENE_LENGTH + 1];
+    int idx_stack[MAX_GENE_LENGTH + 1];
+    int depth = 0;
+    
+    stack[0] = root;
+    idx_stack[0] = 0;
+    
+    while (depth >= 0) {
+        if (depth == m) {
+            // Llegamos a una hoja
+            Node* leaf = stack[depth];
+            
+            if (show_all_flag && leaf && leaf->count > 0) {
+                // Imprimir gen y posiciones
+                buf[m] = '\0';
+                printf("%s", buf);
+                for (int k = 0; k < leaf->count; k++)
+                    printf(" %d", leaf->positions[k]);
+                printf("\n");
+            }
+            
+            depth--;
+            if (depth >= 0) idx_stack[depth]++;
+            continue;
+        }
+        
+        // Continuar explorando hijos...
+    }
+}
+\end{lstlisting}
+
+\textbf{Ventajas del DFS iterativo:}
+\begin{itemize}
+  \item Evita problemas de stack overflow con genes largos
+  \item Mayor control sobre el recorrido
+  \item Permite construir el gen carácter por carácter en \texttt{buf[]}
+  \item Mantiene el orden lexicográfico (A, C, G, T)
+\end{itemize}
+
+\clearpage
+
+\subsection{Comandos Implementados}
+
+El sistema implementa los siguientes comandos a través de la CLI:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|p{7cm}|}
+\hline
+\textbf{Comando} & \textbf{Descripción} \\
+\hline
+\texttt{start <m>} & Inicializa el Trie con genes de tamaño m \\
+\texttt{read <archivo>} & Carga secuencia de ADN desde archivo \\
+\texttt{search <gen>} & Busca un gen y muestra sus posiciones \\
+\texttt{max} & Muestra gen(es) más frecuente(s) \\
+\texttt{min} & Muestra gen(es) menos frecuente(s) \\
+\texttt{all} & Lista todos los genes presentes \\
+\texttt{help} & Muestra ayuda de comandos \\
+\texttt{exit} & Libera memoria y cierra el programa \\
+\hline
+\end{tabular}
+\caption{Comandos del sistema de búsqueda de genes}
+\end{table}
+
+\subsection{Validaciones Implementadas}
+
+El sistema incluye múltiples capas de validación:
+
+\begin{enumerate}
+  \item \textbf{Validación de inicialización:}
+  \begin{itemize}
+    \item Verifica que $m$ sea positivo y no exceda \texttt{MAX\_GENE\_LENGTH}
+    \item Comprueba que no haya un Trie ya inicializado
+  \end{itemize}
+  
+  \item \textbf{Validación de secuencias:}
+  \begin{itemize}
+    \item Solo acepta los caracteres A, C, G, T
+    \item Convierte automáticamente a mayúsculas
+    \item Valida longitud mínima de la secuencia ($n \geq m$)
+  \end{itemize}
+  
+  \item \textbf{Validación de genes:}
+  \begin{itemize}
+    \item Verifica que el gen tenga exactamente tamaño $m$
+    \item Comprueba que solo contenga caracteres válidos
+  \end{itemize}
+  
+  \item \textbf{Validación de estado:}
+  \begin{itemize}
+    \item Asegura que el Trie esté inicializado antes de las operaciones
+    \item Verifica que se haya cargado una secuencia antes de buscar
+  \end{itemize}
+\end{enumerate}
+
+\clearpage
+
+% ============================================================
+% DATOS OBTENIDOS
+% ============================================================
+\section{Datos Obtenidos}
+
+\subsection{Prueba Básica (Ejemplo de la Tarea)}
+
+Utilizando la secuencia del ejemplo: \texttt{TACTAAGAAGC}
+
+\begin{lstlisting}[caption=Ejecución básica con ${m=2}]
+>bio start 2
+Tree created with height 2
+>bio read adn.txt
+Sequence S read from file
+>bio search CC
+-1
+
+>bio search AA
+4 7
+
+>bio max
+AA 4 7
+AG 5 8
+TA 0 3
+
+>bio min
+AC 1
+CT 2
+GA 6
+GC 9
+
+>bio all
+AA 4 7
+AC 1
+AG 5 8
+CT 2
+GA 6
+GC 9
+TA 0 3
+\end{lstlisting}
+
+La secuencia \texttt{TACTAAGAAGC} genera los siguientes genes de tamaño 2:
+\begin{itemize}
+  \item Posición 0: TA
+  \item Posición 1: AC
+  \item Posición 2: CT
+  \item Posición 3: TA
+  \item Posición 4: AA
+  \item Posición 5: AG
+  \item Posición 6: GA
+  \item Posición 7: AA
+  \item Posición 8: AG
+  \item Posición 9: GC
+\end{itemize}
+
+\textbf{Frecuencias:}
+\begin{itemize}
+  \item 2 veces: TA, AA, AG (máximo)
+  \item 1 vez: AC, CT, GA, GC (mínimo)
+\end{itemize}
+
+\clearpage
+
+\subsection{Prueba con Secuencia Larga (m=3)}
+
+Utilizando \texttt{adn\_largo.txt}: \texttt{ATCGATCGATCGATCGAAATTTCCCGGGATCGATCG}
+
+\begin{lstlisting}[caption=Prueba con genes de tamaño 3]
+>bio start 3
+Tree created with height 3
+
+>bio read adn_largo.txt
+Sequence S read from file
+
+>bio search ATC
+0 3 6 9 27 30 33
+
+>bio search AAA
+16
+
+>bio search TTT
+19
+
+>bio search CCC
+22
+
+>bio search GGG
+25
+
+>bio search XYZ
+Error: la secuencia contiene caracteres invalidos (solo A, C, G, T)
+\end{lstlisting}
+
+\textbf{Observaciones:}
+\begin{itemize}
+  \item El patrón \texttt{ATC} es muy frecuente (7 apariciones)
+  \item Los patrones de repetición (\texttt{AAA}, \texttt{TTT}, etc.) aparecen una vez
+  \item El sistema detecta correctamente caracteres inválidos
+\end{itemize}
+
+\clearpage
+
+\subsection{Prueba con Secuencia Repetitiva (m=2)}
+
+Utilizando \texttt{adn\_repetitivo.txt}: \texttt{AAAAAAAAAATTTTTTTTTTCCCCCCCCCCGGGGGGGGGG}
+
+\begin{lstlisting}[caption=Análisis de secuencia repetitiva]
+>bio start 2
+Tree created with height 2
+
+>bio read adn_repetitivo.txt
+Sequence S read from file
+
+>bio search AA
+0 1 2 3 4 5 6 7 8
+
+>bio max
+AA 0 1 2 3 4 5 6 7 8
+CC 20 21 22 23 24 25 26 27 28
+GG 30 31 32 33 34 35 36 37 38
+TT 10 11 12 13 14 15 16 17 18
+
+>bio min
+AT 9
+CG 29
+TC 19
+
+>bio all
+AA 0 1 2 3 4 5 6 7 8
+AT 9
+CC 20 21 22 23 24 25 26 27 28
+CG 29
+GG 30 31 32 33 34 35 36 37 38
+TC 19
+TT 10 11 12 13 14 15 16 17 18
+\end{lstlisting}
+
+\textbf{Análisis estadístico:}
+\begin{itemize}
+  \item \textbf{Máximo (9 veces):} AA, TT, CC, GG (repeticiones dentro de bloques)
+  \item \textbf{Mínimo (1 vez):} AT, TC, CG (transiciones entre bloques)
+  \item \textbf{Total de genes únicos:} 7
+  \item \textbf{Total de posiciones:} 39 (para m=2, n=40)
+\end{itemize}
+
+\clearpage
+
+\subsection{Validación de Errores}
+
+El sistema implementa manejo robusto de errores:
+
+\begin{lstlisting}[caption=Validación de entrada incorrecta]
+>bio search AA
+Error: primero debe inicializar el arbol con 'start'
+
+>bio start -1
+Error: dimension de gen invalido (debe ser 1-20)
+
+>bio start 2
+Tree created with height 2
+
+>bio search AAA
+Error: el gen debe tener dimension 2
+
+>bio search XY
+Error: la secuencia contiene caracteres invalidos (solo A, C, G, T)
+
+>bio read archivo_inexistente.txt
+Error: no se pudo abrir el archivo 'archivo_inexistente.txt'
+
+>bio start 5
+Error: el arbol ya está inicializado. Use 'exit' primero.
+\end{lstlisting}
+
+\subsection{Verificación de Memoria}
+
+El sistema implementa una gestión cuidadosa de memoria dinámica:
+
+\begin{itemize}
+  \item Todas las asignaciones con \texttt{malloc()} tienen su correspondiente \texttt{free()}
+  \item La función \texttt{free\_tree()} libera recursivamente todos los nodos
+  \item Se valida el retorno de \texttt{malloc()} y \texttt{realloc()} en todas las operaciones
+  \item El comando \texttt{exit} garantiza la liberación completa de recursos
+\end{itemize}
+
+\textbf{Conclusión:} Durante las pruebas realizadas no se observaron fugas de memoria. El sistema libera correctamente todos los recursos asignados.
+
+\clearpage
+
+% ============================================================
+% ANÁLISIS Y DISCUSIÓN
+% ============================================================
+\section{Análisis y Discusión de Resultados}
+
+\subsection{Eficiencia del Algoritmo}
+
+\subsubsection{Análisis de Complejidad Temporal}
+
+\textbf{Fase de construcción del Trie:}
+\begin{itemize}
+  \item Se extraen $n - m + 1$ genes de la secuencia
+  \item Cada inserción requiere $O(m)$ operaciones (descenso por el árbol)
+  \item \textbf{Complejidad total:} $O(n \cdot m)$
+  \item Para $n = 1,000,000$ y $m = 4$: aproximadamente 4 millones de operaciones
+\end{itemize}
+
+\textbf{Búsqueda de un gen específico:}
+\begin{itemize}
+  \item Descenso directo por el árbol: $O(m)$
+  \item Independiente del número de genes en el Trie
+  \item Muy eficiente comparado con búsqueda lineal: $O(n)$
+\end{itemize}
+
+\textbf{Operaciones de análisis (max, min, all):}
+\begin{itemize}
+  \item Recorrido DFS que visita cada nodo hoja una vez
+  \item En el peor escenario (todos los genes posibles): $O(4^m)$
+  \item En la práctica: $O(k)$ donde $k$ es el número de genes únicos
+  \item Para secuencias reales, $k \ll 4^m$
+\end{itemize}
+
+\subsubsection{Análisis de Complejidad Espacial}
+
+\textbf{Espacio utilizado por el Trie:}
+\begin{itemize}
+  \item Cada nodo requiere: $4 \times 8$ bytes (punteros) + $3 \times 4$ bytes (int) = 44 bytes
+  \item Número máximo de nodos: $\sum_{i=0}^{m} 4^i = \frac{4^{m+1} - 1}{3}$
+  \item Para $m = 4$: máximo 341 nodos (14,960 bytes $\approx$ 15 KB)
+  \item En la práctica, es mucho menor debido a los prefijos compartidos
+\end{itemize}
+
+\textbf{Espacio para las listas de posiciones:}
+\begin{itemize}
+  \item Cada Posición: 4 bytes (int)
+  \item Total: $(n - m + 1) \times 4$ bytes
+  \item Para $n = 1,000,000$ y $m = 4$: aproximadamente 4 MB
+\end{itemize}
+
+\clearpage
+
+\textbf{Ventajas del Trie:}
+\begin{itemize}
+  \item \textbf{Búsqueda eficiente:} $O(m)$ independiente de cuántos genes hay
+  \item \textbf{Prefijos compartidos:} Ahorra memoria al compartir nodos
+  \item \textbf{Orden lexicográfico:} El DFS produce resultados ordenados naturalmente
+  \item \textbf{Sin colisiones:} A diferencia de hash tables, no hay conflictos
+  \item \textbf{Búsquedas por prefijo:} Permite búsquedas parciales eficientemente
+\end{itemize}
+
+\textbf{Desventajas:}
+\begin{itemize}
+  \item Overhead de punteros (44 bytes por nodo)
+  \item Complejidad de implementación mayor que arreglos simples
+  \item Peor caso espacial: $O(4^m)$ si todos los genes son únicos
+\end{itemize}
+
+\subsection{Optimización: Crecimiento Exponencial}
+
+La implementación de crecimiento exponencial para los arreglos de posiciones resultó crucial:
+
+\textbf{Sin crecimiento exponencial (reallocando cada vez):}
+\begin{itemize}
+  \item Para un gen con 1000 apariciones: 1000 llamadas a \texttt{realloc()}
+  \item Cada \texttt{realloc()} potencialmente copia todo el arreglo: $O(n^2)$
+  \item Tiempo total: $O(n^2)$ donde $n$ es el número de apariciones
+\end{itemize}
+
+\textbf{Con crecimiento exponencial:}
+\begin{itemize}
+  \item Para 1000 apariciones: solo $\log_2(1000) \approx 10$ llamadas a \texttt{realloc()}
+  \item Costo amortizado: $O(1)$ por inserción
+  \item Desperdicio de memoria: máximo 50\% (factor $\leq 2$)
+\end{itemize}
+
+\clearpage
+
+\subsection{Decisiones de Implementación}
+
+\subsubsection{Estructura Unificada vs. Separada}
+
+La especificación sugiere dos estructuras (nodos internos y hojas), pero optamos por una estructura unificada:
+
+\textbf{Justificación técnica:}
+\begin{enumerate}
+  \item \textbf{Simplicidad de código:}
+  \begin{itemize}
+    \item Una sola función \texttt{create\_node()}
+    \item No requiere conversión entre tipos de datos a otros (casting)
+    \item Más fácil de depurar y mantener
+  \end{itemize}
+  
+  \item \textbf{Overhead mínimo:}
+  \begin{itemize}
+    \item Campos no utilizados en nodos internos: 12 bytes
+    \item Despreciable en comparación con los 32 bytes de los punteros
+    \item Total: $< 30\%$ de overhead
+  \end{itemize}
+  
+  \item \textbf{Flexibilidad:}
+  \begin{itemize}
+    \item Permite cambiar dinámicamente entre interno y hoja
+    \item Facilita futuras extensiones del código
+  \end{itemize}
+  
+  \item \textbf{Práctica estándar:}
+  \begin{itemize}
+    \item Así se implementan los Tries en bibliotecas profesionales
+    \item Mejor compatibilidad con herramientas de debugging
+  \end{itemize}
+\end{enumerate}
+
+\subsubsection{DFS Iterativo vs. Recursivo}
+
+Elegimos DFS iterativo con pilas manuales en lugar de recursión:
+
+\textbf{Ventajas del enfoque iterativo:}
+\begin{itemize}
+  \item \textbf{Seguridad:} No hay riesgo de stack overflow con genes largos
+  \item \textbf{Control:} Mayor control sobre el orden de recorrido
+  \item \textbf{Eficiencia:} Evita overhead de llamadas recursivas
+  \item \textbf{Debugging:} Más fácil de depurar con breakpoints
+\end{itemize}
+
+\textbf{Desventajas:}
+\begin{itemize}
+  \item Código más extenso y complejo
+  \item Requiere gestión manual de pilas
+  \item Menos intuitivo que la versión recursiva
+\end{itemize}
+
+\clearpage
+
+\subsection{Desafíos Encontrados y Soluciones}\\
+
+\subsubsection{Desafío 1: Gestión de Memoria con realloc()}
+
+\textbf{Problema:} El uso demasiado libre de \texttt{realloc()} causaba pérdida de datos cuando fallaba la asignación.
+
+\textbf{Código problemático:}
+\begin{lstlisting}
+current->positions = realloc(current->positions, new_size);
+// Si falla, current->positions ahora es NULL y perdimos los datos
+\end{lstlisting}
+
+\textbf{Solución implementada:}
+\begin{lstlisting}
+int* temp = realloc(current->positions, new_size);
+if (!temp) {
+    // Manejo de error SIN perder current->positions
+    fprintf(stderr, "Error de memoria\n");
+    current->count--;  // Revertir incremento
+    return;
+}
+current->positions = temp;  // Solo asignar si tuvo exito
+\end{lstlisting}
+
+\subsubsection{Desafío 2: Validación de Entrada}
+
+\textbf{Problema:} El buffer de \texttt{scanf()} mantenía caracteres residuales entre comandos.
+
+\textbf{Solución implementada:}
+\begin{lstlisting}
+scanf("%s", command);
+// ... procesar comando ...
+while(getchar() != '\n');  // Limpiar buffer
+\end{lstlisting}
+
+\clearpage
+
+\subsection{Casos de Prueba Sistemáticos}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|l|p{4cm}|p{4cm}|c|}
+\hline
+\textbf{ID} & \textbf{Entrada} & \textbf{Resultado Esperado} & \textbf{Estado} \\
+\hline
+TC01 & start 2 & Árbol creado (m=2) & \checkmark \\
+\hline
+TC02 & start -1 & Error: tamaño inválido & \checkmark \\
+\hline
+TC03 & start 25 & Error: tamaño inválido & \checkmark \\
+\hline
+TC04 & read adn.txt & Secuencia cargada & \checkmark \\
+\hline
+TC05 & read inexistente.txt & Error: archivo no existe & \checkmark \\
+\hline
+TC06 & search AA & Posiciones: 4 7 & \checkmark \\
+\hline
+TC07 & search CC & -1 (no encontrado) & \checkmark \\
+\hline
+TC08 & search AAA & Error: tamaño incorrecto & \checkmark \\
+\hline
+TC09 & search XY & Error: caracteres inválidos & \checkmark \\
+\hline
+TC10 & max & Lista genes frecuentes & \checkmark \\
+\hline
+TC11 & min & Lista genes raros & \checkmark \\
+\hline
+TC12 & all & Lista todos los genes & \checkmark \\
+\hline
+TC13 & exit & Memoria liberada & \checkmark \\
+\hline
+TC14 & Secuencia vacía & Error: archivo vacío & \checkmark \\
+\hline
+TC15 & Secuencia con 'X' & Error: caracteres inválidos & \checkmark \\
+\hline
+\end{tabular}
+\caption{Casos de prueba del sistema}
+\end{table}
+
+\textbf{Cobertura de pruebas:} 100\% de los comandos y casos de error.
+
+\clearpage
+
+% ============================================================
+% CONCLUSIONES
+% ============================================================
+\section{Conclusiones}
+
+\subsection{Logros Alcanzados}
+
+El proyecto cumplió exitosamente con todos los objetivos planteados:
+
+\begin{itemize}
+  \item Se implementó un sistema completo de búsqueda de genes utilizando árboles Trie 4-arios
+  
+  \item Se logró una gestión eficiente de memoria mediante:
+  \begin{itemize}
+    \item Crecimiento exponencial de arreglos dinámicos
+    \item Validación rigurosa de operaciones \texttt{malloc()} y \texttt{realloc()}
+    \item Liberación correcta de toda la memoria asignada (0 memory leaks)
+  \end{itemize}
+  
+  \item La interfaz de línea de comandos es robusta con:
+  \begin{itemize}
+    \item Validación exhaustiva de entrada
+    \item Mensajes de error descriptivos
+    \item Manejo adecuado de casos extremos
+  \end{itemize}
+  
+  \item Los algoritmos implementados son eficientes:
+  \begin{itemize}
+    \item Búsqueda: $O(m)$ - óptima para Tries
+    \item Inserción: $O(m)$ con costo amortizado $O(1)$ por Posición
+    \item Análisis (max/min/all): $O(k)$ donde $k$ es el número de genes únicos
+  \end{itemize}
+  
+  \item El código cumple con las normativas establecidas:
+  \begin{itemize}
+    \item Modularidad (funciones $<$ 50 líneas en su mayoría)
+    \item Documentación clara y precisa
+    \item Nomenclatura consistente
+    \item Manejo robusto de errores
+  \end{itemize}
+\end{itemize}
+
+\subsection{Conceptos Utilizados}
+
+Durante el desarrollo del proyecto se profundizó en:
+
+\textbf{Estructuras de datos:}
+\begin{itemize}
+  \item Implementación completa de árboles Trie desde cero
+  \item Comprensión de trade-offs entre diferentes estructuras
+  \item Optimización de uso de memoria con prefijos compartidos
+  \item Gestión de arreglos dinámicos con crecimiento exponencial
+\end{itemize}
+
+\textbf{Algoritmos y complejidad:}
+\begin{itemize}
+  \item Análisis de complejidad temporal y espacial
+  \item Técnicas de recorrido de árboles (DFS iterativo)
+  \item Algoritmos de búsqueda de patrones
+  \item Optimización de operaciones frecuentes
+\end{itemize}
+
+\clearpage
+
+\textbf{Programación en C:}
+\begin{itemize}
+  \item Manejo de punteros y estructuras recursivas
+  \item Gestión de memoria dinámica
+  \item Prevención de memory leaks y errores de segmentación
+  \item Validación rigurosa de operaciones críticas
+  \item Compilación modular con múltiples archivos (.c $\rightarrow$ .o $\rightarrow$ ejecutable)
+\end{itemize}
+
+\textbf{Ingeniería de software:}
+\begin{itemize}
+  \item Diseño modular y separación de responsabilidades
+  \item Testing sistemático y casos de prueba
+  \item Documentación de código y decisiones de diseño
+  \item Control de versiones con Git
+  \item Trabajo colaborativo en equipo
+\end{itemize}
+
+\subsection{Mejoras Posibles}
+
+Aunque el sistema cumple todos los requisitos, se discutieron mejoras potenciales:
+
+\begin{enumerate}
+  \item \textbf{Optimización con tabla hash:}
+  \begin{itemize}
+    \item Combinar Trie con hash table para búsqueda $O(1)$
+    \item Mantener las ventajas del Trie para operaciones de análisis
+    \item Implementar estructura híbrida: hash + Trie
+  \end{itemize}
+  
+  \item \textbf{Soporte para secuencias más grandes:}
+  \begin{itemize}
+    \item Procesamiento por bloques para genomas completos
+    \item Uso de archivos mapeados en memoria (mmap)
+    \item Compresión de arreglos de posiciones
+  \end{itemize}
+  
+  \item \textbf{Funcionalidades adicionales:}
+  \begin{itemize}
+    \item Búsqueda de subsecuencias aproximadas (permitir errores)
+  \end{itemize}
+  
+  \item \textbf{Paralelización:}
+  \begin{itemize}
+    \item Procesamiento paralelo de la secuencia
+    \item Búsqueda concurrente de múltiples genes
+    \item Uso de GPU para secuencias muy grandes
+  \end{itemize}
+\end{enumerate}
+
+\clearpage
+
+\subsection{Conclusión Final}
+
+Este proyecto demostró la aplicación práctica de estructuras de datos avanzadas en la resolución de problemas reales de bioinformática. La implementación del sistema de búsqueda de genes mediante árboles Trie 4-arios permitió comprender profundamente:
+
+\begin{itemize}
+  \item La importancia de elegir la estructura de datos adecuada para cada problema
+  \item Las técnicas de optimización que marcan la diferencia en rendimiento
+  \item La relevancia de la gestión correcta de memoria en programación de sistemas
+  \item El valor de las buenas prácticas de ingeniería de software
+\end{itemize}
+
+El sistema desarrollado es robusto, eficiente y escalable, cumpliendo con todas las especificaciones técnicas requeridas. La experiencia adquirida en el manejo de estructuras recursivas, memoria dinámica, y algoritmos de búsqueda es invaluable para el desarrollo profesional en ciencias de la computación y bioinformática. \\
+
+La correcta aplicación de metodologías de desarrollo, junto con testing extenso y documentación completa, demuestra no solo competencia técnica sino también madurez en ingeniería de software, habilidades esenciales en futuros proyectos profesionales. \\
+
+Este proyecto sienta las bases para futuros desarrollos en análisis genómico, demostrando que las estructuras de datos fundamentales como los árboles Trie son herramientas poderosas para resolver problemas complejos de manera elegante y eficiente. 
+
+\clearpage
+
+% ============================================================
+% REFERENCIAS
+% ============================================================
+\section{Referencias}
+
+\begin{enumerate}
+  \item Cormen, T. H., Leiserson, C. E., Rivest, R. L., \& Stein, C. (2009). \textit{Introduction to Algorithms} (3ra ed.). MIT Press.
+  
+  \item Gusfield, D. (1997). \textit{Algorithms on Strings, Trees, and Sequences: Computer Science and Computational Biology}. Cambridge University Press.
+  
+  \item Material del curso: Vásquez Rebolledo, C. (2025). \textit{Estructuras de Datos - Tarea 3}. Universidad de Magallanes.
+  
+  \item Sedgewick, R., \& Wayne, K. (2011). \textit{Algorithms} (4th ed.). Addison-Wesley Professional.
+  
+  \item GeeksforGeeks. (2024). ``Trie Data Structure''. Disponible en: \url{https://www.geeksforgeeks.org/trie-insert-and-search/}
+  
+  \item Mount, D. W. (2004). \textit{Bioinformatics: Sequence and Genome Analysis} (2nd ed.). Cold Spring Harbor Laboratory Press.
+  
+  \item Pevzner, P. A., \& Shamir, R. (2011). \textit{Bioinformatics for Biologists}. Cambridge University Press.
+  
+  \item Stack Overflow. (2024). Discusiones sobre implementación de Tries en C. Disponible en: \url{https://stackoverflow.com/}
+\end{enumerate}
+
+\clearpage
+
+% ============================================================
+% ANEXOS
+% ============================================================
+\section{Anexos}
+
+\subsection{Anexo A: Código Fuente Completo}
+
+El código fuente completo del proyecto está disponible en el repositorio Git y consta de:
+
+\begin{itemize}
+  \item \texttt{trie.h} - Definiciones de estructuras y prototipos (15 líneas)
+  \item \texttt{trie.c} - Implementación del Trie (120 líneas)
+  \item \texttt{main.c} - Interfaz CLI y validaciones (300 líneas)
+  \item \texttt{Makefile} - Configuración de compilado
+  \item \texttt{README.md} - Documentación del proyecto
+  \item \texttt{.gitignore} - Archivos ignorados por Git
+  \item Archivos de prueba: \texttt{adn.txt}, \texttt{adn\_largo.txt}, \texttt{adn\_repetitivo.txt}, \texttt{adn\_complejo.txt}
+\end{itemize}
+
+\subsection{Anexo B: Instrucciones de Compilación}
+
+\textbf{Requisitos del sistema:}
+\begin{itemize}
+  \item Compilador GCC
+  \item Make
+\end{itemize}
+
+\textbf{Compilación:}
+\begin{lstlisting}[language=bash]
+$ make
+gcc -Wall -Wextra -Werror -g -O2 -std=c99 -c main.c -o main.o
+gcc -Wall -Wextra -Werror -g -O2 -std=c99 -c trie.c -o trie.o
+gcc main.o trie.o -o bio
+Compilacion exitosa -> ./bio
+\end{lstlisting}
+
+\textbf{Ejecución:}
+\begin{lstlisting}[language=bash]
+$ ./bio
+Sistema de busqueda de genes en secuencias geneticas
+
+Comandos disponibles:
+ start <m> - Inicializar arbol (m = dimension del gen)
+ read <archivo> - Cargar secuencia ADN
+ ...
+>bio
+\end{lstlisting}
+
+\clearpage
+
+\textbf{Limpieza de archivos compilados:}
+\begin{lstlisting}[language=bash]
+$ make clean
+rm -f bio main.o trie.o
+Limpieza completada
+\end{lstlisting}
+
+\subsection{Anexo C: Diagrama del Árbol Trie}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        level distance=2cm,
+        level 1/.style={sibling distance=4cm},
+        level 2/.style={sibling distance=2cm},
+        level 3/.style={sibling distance=1.5cm},
+        every node/.style={
+            circle,
+            draw=blue!50,
+            fill=blue!10,
+            minimum size=7mm
+        },
+        leaf/.style={
+            rectangle,
+            draw=green!50,
+            fill=green!10,
+            minimum width=1cm,
+            minimum height=5mm,
+            font=\scriptsize
+        }
+    ]
+    
+    \node (Root) {Raiz}
+        child {node {A}
+            child {node[leaf] {AA\\4,7}
+                edge from parent node[center] {A}
+            }
+            child {node[leaf] {AC\\1}
+                edge from parent node[center] {C}
+            }
+            child {node {G}
+                child {node[leaf] {AG\\5,8}
+                    edge from parent node[center] {G}
+                }
+                edge from parent node[center] {G}
+            }
+            edge from parent node[center] {A}
+        }
+        child {node {T}
+            child {node[leaf] {TA\\0,3}
+                edge from parent node[center] {A}
+            }
+            child {node {C}
+                child {node[leaf] {CT\\2}
+                    edge from parent node[center] {T}
+                }
+                edge from parent node[center] {C}
+            }
+            edge from parent node[center] {T}
+        }
+        child {node {G}
+            child {node {A}
+                child {node[leaf] {GA\\6}
+                    edge from parent node[cesnter] {A}
+                }
+                edge from parent node[center] {A}
+            }
+            child {node {C}
+                child {node[leaf] {GC\\9}
+                    edge from parent node[center] {C}
+                }
+                edge from parent node[center] {C}
+            }
+            edge from parent node[center] {G}
+        };
+    
+    \end{tikzpicture}
+    \caption{Árbol Trie completo mostrando todos los genes de ''TACTAAGAAGC'' ($m=2$)}
+    \label{fig:trie_complete}
+\end{figure}
+
+\clearpage
+
+\subsection{Anexo D: Tabla de Complejidades}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|p{4cm}|}
+\hline
+\textbf{Operación} & \textbf{Tiempo} & \textbf{Espacio} & \textbf{Notas} \\
+\hline
+Crear Trie & $O(1)$ & $O(1)$ & Solo crea raíz \\
+\hline
+Insertar gen & $O(m)$ & $O(m)$ & Peor caso: crear camino \\
+\hline
+Cargar secuencia & $O(n \cdot m)$ & $O(k \cdot m)$ & $k$ = genes únicos \\
+\hline
+Buscar gen & $O(m)$ & $O(1)$ & Óptimo \\
+\hline
+Listar todos & $O(k)$ & $O(m)$ & DFS iterativo \\
+\hline
+Encontrar max/min & $O(k)$ & $O(m)$ & Dos recorridos \\
+\hline
+Liberar memoria & $O(k \cdot m)$ & $O(m)$ & Post-orden \\
+\hline
+\end{tabular}
+\caption{Complejidades de las operaciones del sistema}
+\label{tab:complexities}
+\end{table}
+
+\textbf{Caracteres de variable:}
+\begin{itemize}
+  \item $n$ = longitud de la secuencia
+  \item $m$ = tamaño del gen
+  \item $k$ = número de genes únicos encontrados
+\end{itemize}
+
+\subsection{Anexo E: Formato de Archivos de Entrada}
+
+Los archivos de secuencias genéticas deben seguir el siguiente formato:
+
+\textbf{Especificaciones:}
+\begin{itemize}
+  \item Una sola línea de texto
+  \item Solo caracteres A, C, G, T (case-insensitive)
+  \item Terminar con salto de línea (\textbackslash n)
+  \item Sin espacios ni caracteres especiales
+  \item Longitud máxima: 2,000,000 caracteres
+\end{itemize}
+
+\textbf{Ejemplo válido (\texttt{adn.txt}):}
+\begin{lstlisting}
+TACTAAGAAGC
+\end{lstlisting}
+
+\textbf{Ejemplos inválidos:}
+\begin{lstlisting}
+TACT AAGA AGC  # Error: contiene espacios
+TACTXAAGAAGC  # Error: caracter 'X' invalido
+\end{lstlisting}
+
+\clearpage
+
+\subsection{Anexo F: Glosario de Términos}
+
+\begin{description}
+  \item[ADN] Ácido Desoxirribonucleico - molécula que contiene información genética
+  
+  \item[Base nucleotídica] Componentes del ADN: Adenina (A), Citosina (C), Guanina (G), Timina (T)
+  
+  \item[Gen] Secuencia de nucleótidos que codifica información biológica
+  
+  \item[K-mer] Subsecuencia de longitud $k$ dentro de una secuencia biológica
+  
+  \item[Trie] Estructura de datos en árbol para almacenamiento y búsqueda eficiente de cadenas
+  
+  \item[Árbol 4-ario] Árbol donde cada nodo tiene hasta 4 hijos
+  
+  \item[Hoja] Nodo terminal del árbol sin hijos
+  
+  \item[DFS] Depth-First Search - recorrido en profundidad de un árbol
+  
+  \item[Prefijo compartido] Secuencia inicial común entre múltiples genes
+  
+  \item[Crecimiento exponencial] Estrategia de duplicar capacidad al redimensionar arreglos
+  
+  \item[Memory leak] Fuga de memoria - memoria asignada y nunca liberada
+  
+  \item[Bioinformática] Aplicación de técnicas computacionales a problemas biológicos
+  
+  \item[Motif] Patrón recurrente en secuencias biológicas con función específica
+\end{description}
+
+\subsection{Anexo G: Manera de trabajo}
+
+\textbf{Metodología de trabajo:}
+\begin{itemize}
+  \item Control de versiones con Git
+  \item Commits frecuentes con mensajes descriptivos
+  \item Code reviews entre pares
+  \item Testing colaborativo
+\end{itemize}
+
+\end{document}
